@@ -15,7 +15,7 @@ class CartScreen extends StatelessWidget {
             children: [
               ...cart.cartItems.map((item) => ListTile(
                     title: Text(item.name),
-                    subtitle: Text("\$${item.price}"),
+                    subtitle: Text("Birr ${item.price}"),
                     trailing: IconButton(
                       icon: Icon(Icons.remove_circle),
                       onPressed: () {
@@ -26,7 +26,7 @@ class CartScreen extends StatelessWidget {
               Divider(),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('Total: \$${cart.totalPrice}'),
+                child: Text('Total: Birr ${cart.totalPrice}'),
               ),
               ElevatedButton(
                 onPressed: () {
