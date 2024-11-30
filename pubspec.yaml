@@ -36,6 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   provider: ^6.0.5
+  font_awesome_flutter: ^10.1.0
 
 dev_dependencies:
   flutter_test:
@@ -67,10 +68,10 @@ flutter:
     - lib/images/drop_cup.jpg
     - lib/images/espresso.png
     - lib/images/good_coffee.jpg
-    - lib/images/credit_card.jpg
-    - lib/images/paypal.jpg
-    - lib/images/cash.jpg
+    - lib/images/founder.jpg
+    - lib/images/employees.jpg
     - lib/images/profile.jpg
+    - lib/images/coffee_wellcom.jpg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

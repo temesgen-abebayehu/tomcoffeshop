@@ -1,42 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:tomcoffeshop/models/user_model.dart';
+import 'package:tomcoffeshop/widgets/base_scaffold.dart';
 
-class AccountScreen extends StatelessWidget {
+class EditAccountScreen extends StatefulWidget {
+  const EditAccountScreen({super.key});
+
+  @override
+  EditAccountScreenState createState() => EditAccountScreenState();
+}
+
+class EditAccountScreenState extends State<EditAccountScreen> {
+  final _formKey = GlobalKey<FormState>();
+  late UserModel _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = UserModel(
+      id: '1', // Add the required id parameter
+      name: 'Tom man',
+      address: 'addis ababa',
+      email: 'tom@gmail.com',
+      phoneNumber: '+25123456789',
+      profileImageUrl: 'lib/images/profile.jpg', 
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Account Info'), backgroundColor: Colors.brown),
+    return BaseScaffold(
+      title:'Account Info',
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundImage: AssetImage('lib/images/profile.jpg'),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Name: Tom man',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Email: tom@gmail.com',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Phone: +25123456789',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Add logic to edit account details
-              },
-              child: Text('Edit Info'),
-            ),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage(_user.profileImageUrl),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Name'),
+                initialValue: _user.name,
+                onSaved: (value) {
+                  _user.name = value!;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Address'),
+                initialValue: _user.address,
+                onSaved: (value) {
+                  _user.address = value!;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Email'),
+                initialValue: _user.email,
+                onSaved: (value) {
+                  _user.email = value!;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Phone'),
+                initialValue: _user.phoneNumber,
+                onSaved: (value) {
+                  _user.phoneNumber = value!;
+                },
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    // Save the updated details
+                    setState(() {});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Account info saved')),
+                    );
+                    // Navigate to home page
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tomcoffeshop/widgets/base_scaffold.dart';
 
 class OrderScreen extends StatelessWidget {
   final List<Map<String, dynamic>> orders = [
@@ -18,8 +19,8 @@ class OrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Orders'), backgroundColor: Colors.brown),
+    return BaseScaffold(
+      title: 'Orders',
       body: ListView.builder(
         itemCount: orders.length,
         itemBuilder: (context, index) {

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tomcoffeshop/screens/about_screen.dart';
+import 'package:tomcoffeshop/screens/contact_screen.dart';
 import 'package:tomcoffeshop/screens/order_history_screen.dart';
 import 'package:tomcoffeshop/screens/order_success_screen.dart';
 import 'package:tomcoffeshop/screens/payment_screen.dart';
-import 'package:tomcoffeshop/screens/user_info_screen.dart';
 import 'models/cart_model.dart';
 import 'screens/home_screen.dart';
 import 'screens/menu_screen.dart';
 import 'screens/cart_screen.dart';
-import 'screens/checkout_screen.dart';
 import 'screens/account_screen.dart';
 import 'screens/order_screen.dart';
 
@@ -31,13 +31,13 @@ class MyApp extends StatelessWidget {
           '/': (context) => HomeScreen(),
           '/menu': (context) => MenuScreen(),
           '/cart': (context) => CartScreen(),
-          '/checkout': (context) => CheckoutScreen(),
           '/orders': (context) => OrderScreen(),
-          '/account': (context) => AccountScreen(),
+          '/account': (context) => EditAccountScreen(),
           '/payment': (context) => PaymentScreen(),
-          '/userInfo': (context) => UserInfoScreen(),
-        '/orderSuccess': (context) => OrderSuccessScreen(),
+          '/orderSuccess': (context) => OrderSuccessScreen(),
           '/orderHistory': (context) => OrderHistoryScreen(),
+          '/contact': (context) => ContactScreen(),
+          '/about': (context) => AboutScreen(),
         },
       ),
     );

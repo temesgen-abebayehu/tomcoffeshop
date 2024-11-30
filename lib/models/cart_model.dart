@@ -2,17 +2,25 @@
 import 'package:flutter/material.dart';
 import 'package:tomcoffeshop/models/cart_item.dart';
 import 'package:tomcoffeshop/models/order_model.dart';
+import 'package:tomcoffeshop/models/user_model.dart';
 
 class CartModel extends ChangeNotifier {
   String _userName = 'Tom';
   String _userAddress = 'addis ababa';
   String _userEmail = 'tom@gmail.com';
+
+
+  final UserModel _user = UserModel(id: '1', name: 'Tom', address: 'addis ababa', email: 'tom@gmail.com', phoneNumber: '1234567890', profileImageUrl: 'lib/images/profile.jpg');
+
+  String get userName => _user.name;
+  String get userAddress => _user.address;
+  String get userEmail => _user.email;
   final List<String> _orderHistory = [];
   final List<CartItem> _items = []; // Stores cart items
 
   List<CartItem> get cartItems => _items;
 
-  double get totalPrice => _items.fold(0, (sum, item) => sum + item.price);
+  double get totalPrice => _items.fold(0, (sum, item) => sum + (item.price * item.quantity));
 
   // Setter for user info
   void setUserInfo(String name, String address, String email) {
@@ -57,7 +65,7 @@ class CartModel extends ChangeNotifier {
     String order = 'Order placed by: $_userName ($_userEmail)\n'
         'Address: $_userAddress\n'
         'Payment Method: $paymentMethod\n'
-        'Items: ${_items.map((item) => item.name).join(', ')}\n'
+        'Items: ${_items.map((item) => '${item.name} x ${item.quantity}').join(', ')}\n'
         'Status: Order Placed\n'
         'Total Price: Birr ${totalPrice.toStringAsFixed(2)}';
     _orderHistory.add(order);

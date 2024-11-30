@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tomcoffeshop/widgets/base_scaffold.dart';
 import '../models/cart_model.dart';
 import '../models/menu_item.dart';
 import '../models/cart_item.dart'; // Add this line to import CartItem
@@ -40,11 +41,8 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Menu'),
-        backgroundColor: Colors.brown,
-      ),
+    return BaseScaffold(
+      title: 'Menu',
       body: Column(
         children: [
           Expanded(
@@ -60,10 +58,7 @@ class MenuScreen extends StatelessWidget {
                     subtitle: Text('${menuItem.description} - Birr ${menuItem.price}'),
                     trailing: Icon(Icons.add_shopping_cart),
                     onTap: () {
-                      Provider.of<CartModel>(context, listen: false).addItemToCart(CartItem(menuItem: menuItem, name: menuItem.name, price: menuItem.price, quantity: 1));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('${menuItem.name} added to cart!')),
-                      );
+                      _showAddToCartDialog(context, menuItem);
                     },
                   ),
                 );
@@ -87,6 +82,79 @@ class MenuScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showAddToCartDialog(BuildContext context, MenuItem menuItem) {
+    int quantity = 1;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Add ${menuItem.name} to Cart'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Enter quantity:'),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          setState(() {
+                            if (quantity > 1) {
+                              quantity--;
+                            }
+                          });
+                        },
+                      ),
+                      Text(quantity.toString()),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            quantity++;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Provider.of<CartModel>(context, listen: false).addItemToCart(
+                      CartItem(
+                        menuItem: menuItem,
+                        name: menuItem.name,
+                        price: menuItem.price,
+                        quantity: quantity,
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('${menuItem.name} added to cart!')),
+                    );
+                  },
+                  child: const Text('Add to Cart'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
