@@ -5,12 +5,14 @@ import 'package:tomcoffeshop/models/order_model.dart';
 import 'package:tomcoffeshop/models/user_model.dart';
 
 class CartModel extends ChangeNotifier {
-  String _userName = 'Tom';
-  String _userAddress = 'addis ababa';
-  String _userEmail = 'tom@gmail.com';
-
-
-  final UserModel _user = UserModel(id: '1', name: 'Tom', address: 'addis ababa', email: 'tom@gmail.com', phoneNumber: '1234567890', profileImageUrl: 'lib/images/profile.jpg');
+  final UserModel _user = UserModel(
+    id: '1',
+    name: 'Temesgen',
+    address: 'addis ababa',
+    email: 'tom@gmail.com',
+    phoneNumber: '1234567890',
+    profileImageUrl: 'lib/images/profile.jpg',
+  );
 
   String get userName => _user.name;
   String get userAddress => _user.address;
@@ -24,9 +26,9 @@ class CartModel extends ChangeNotifier {
 
   // Setter for user info
   void setUserInfo(String name, String address, String email) {
-    _userName = name;
-    _userAddress = address;
-    _userEmail = email;
+    _user.name = name;
+    _user.address = address;
+    _user.email = email;
     notifyListeners();
   }
 
@@ -62,12 +64,17 @@ class CartModel extends ChangeNotifier {
 
   // Place an order and save in history
   void placeOrder(String paymentMethod) {
-    String order = 'Order placed by: $_userName ($_userEmail)\n'
-        'Address: $_userAddress\n'
+    final DateTime now = DateTime.now();
+    final String formattedDate = '${now.month}/${now.day}/${now.year} ${now.hour == 0 ? 12 : now.hour % 12}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}';
+    
+    String order = 'Order placed by: ${_user.name}\n' 
+        'Email: (${_user.email})\n'
+        'Address: ${_user.address}\n'
         'Payment Method: $paymentMethod\n'
         'Items: ${_items.map((item) => '${item.name} x ${item.quantity}').join(', ')}\n'
         'Status: Order Placed\n'
-        'Total Price: Birr ${totalPrice.toStringAsFixed(2)}';
+        'Total Price: Birr ${totalPrice.toStringAsFixed(2)}\n'
+        'Date: $formattedDate';
     _orderHistory.add(order);
     clearCart();
     notifyListeners();
@@ -79,12 +86,14 @@ class CartModel extends ChangeNotifier {
   // Add a complete order object to history (if needed)
   void addOrder(Order order) {
     // Convert order to a string for display
-    String orderDetails = 'Order by ${order.name} (${order.email})\n'
+    String orderDetails = 'Order by ${order.name}\n'
+        'Email: (${order.email})\n'
         'Address: ${order.address}\n'
         'Items: ${order.items.join(', ')}\n'
-        'Total: \$${order.totalPrice}\n'
-        'Items: ${order.items.join(', ')}\n'        
-        'Payment Method: Birr ${order.paymentMethod}';
+        'Total Price: Birr ${order.totalPrice}\n'
+        'Items: ${order.items.join(', ')}\n'     
+        'Status: Order Placed\n'  
+        'Payment Method: ${order.paymentMethod}';
     _orderHistory.add(orderDetails);
     clearCart();
     notifyListeners();

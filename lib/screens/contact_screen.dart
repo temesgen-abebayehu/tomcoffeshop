@@ -14,47 +14,49 @@ class ContactScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Your Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'This field is required';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Your Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'This field is required';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                maxLines: 4,
-                decoration: InputDecoration(labelText: 'Your Message'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'This field is required';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    // Handle contact form submission
-                    Navigator.pop(context);
-                  }
-                },
-                child: Text('Send Message'),
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Your Name'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'This field is required';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Your Email'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'This field is required';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  maxLines: 4,
+                  decoration: InputDecoration(labelText: 'Your Message'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'This field is required';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      // Handle contact form submission
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text('Send Message'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -13,7 +13,7 @@ class OrderSuccessScreen extends StatelessWidget {
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 80),
             const Text('Your order was successfully placed!', style: TextStyle(fontSize: 24)),
-            const Text('The order will be expired on 12 hour\'s', style: TextStyle(fontSize: 18, color: Colors.red)),
+            const Text('The order will be expire on 12 hour\'s', style: TextStyle(fontSize: 18, color: Colors.red)),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {

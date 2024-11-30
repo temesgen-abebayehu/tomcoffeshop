@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; 
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BaseScaffold extends StatelessWidget {
   final Widget body;
   final String title;
 
-  const BaseScaffold({required this.body, this.title = ''});
+  const BaseScaffold({super.key, required this.body, this.title = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +20,17 @@ class BaseScaffold extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.menu, color: Colors.white),
+                  icon: const Icon(Icons.menu, color: Colors.white),
                   onPressed: () => _showMenu(context),
                 ),
                 Text(
                   title,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
               ],
             ),
             IconButton(
-              icon: Icon(Icons.account_circle, color: Colors.white),
+              icon: const Icon(Icons.account_circle, color: Colors.white),
               onPressed: () {
                 // Navigate to account screen
                 Navigator.pushNamed(context, '/account');
@@ -66,23 +67,23 @@ class BaseScaffold extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text('Menu', style: TextStyle(color: Colors.white)),
+                title: const Text('Menu', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pushNamed(context, '/menu'),
               ),
               ListTile(
-                title: Text('Cart', style: TextStyle(color: Colors.white)),
+                title: const Text('Cart', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pushNamed(context, '/cart'),
               ),
               ListTile(
-                title: Text('History', style: TextStyle(color: Colors.white)),
+                title: const Text('History', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pushNamed(context, '/orderHistory'),
               ),
               ListTile(
-                title: Text('About', style: TextStyle(color: Colors.white)),
+                title: const Text('About', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pushNamed(context, '/about'),
               ),
               ListTile(
-                title: Text('Contact', style: TextStyle(color: Colors.white)),
+                title: const Text('Contact', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pushNamed(context, '/contact'),
               ),
             ],
@@ -94,50 +95,52 @@ class BaseScaffold extends StatelessWidget {
 }
 
 class Footer extends StatelessWidget {
+  const Footer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.brown,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          const Text(
             'Enjoy your coffee experience!',
             style: TextStyle(color: Colors.white, fontSize: 16),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.white),
+                icon: const FaIcon(FontAwesomeIcons.facebook, color: Colors.white),
                 onPressed: () {
-                  // Add your social link logic here
+                  launch('https://www.facebook.com');
                 },
               ),
               IconButton(
-                icon: FaIcon(FontAwesomeIcons.telegram, color: Colors.white),
+                icon: const FaIcon(FontAwesomeIcons.telegram, color: Colors.white),
                 onPressed: () {
-                  // Add your social link logic here
+                  launch('https://www.telegram.com');
                 },
               ),
               IconButton(
-                icon: FaIcon(FontAwesomeIcons.linkedin, color: Colors.white),
+                icon: const FaIcon(FontAwesomeIcons.linkedin, color: Colors.white),
                 onPressed: () {
-                  // Add your social link logic here
+                  launch('https://www.linkedin.com');
                 },
               ),
               IconButton(
-                icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.white),
+                icon: const FaIcon(FontAwesomeIcons.instagram, color: Colors.white),
                 onPressed: () {
-                  // Add your social link logic here
+                  launch('https://www.instagram.com');
                 },
               ),
             ],
           ),
-          SizedBox(height: 8),
-          Text(
+          const SizedBox(height: 8),
+          const Text(
             '© 2024 Tom Coffee Shop',
             style: TextStyle(color: Colors.white, fontSize: 12),
           ),

@@ -18,7 +18,7 @@ class EditAccountScreenState extends State<EditAccountScreen> {
     super.initState();
     _user = UserModel(
       id: '1', // Add the required id parameter
-      name: 'Tom man',
+      name: 'Temesgen',
       address: 'addis ababa',
       email: 'tom@gmail.com',
       phoneNumber: '+25123456789',
