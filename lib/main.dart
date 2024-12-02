@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tomcoffeshop/screens/about_screen.dart';
+import 'package:tomcoffeshop/screens/checkout_screen.dart';
 import 'package:tomcoffeshop/screens/contact_screen.dart';
 import 'package:tomcoffeshop/screens/order_history_screen.dart';
 import 'package:tomcoffeshop/screens/order_success_screen.dart';
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
           '/account': (context) => EditAccountScreen(),
           '/payment': (context) => PaymentScreen(),
           '/orderSuccess': (context) => OrderSuccessScreen(),
-          '/orderHistory': (context) => OrderHistoryScreen(),
+          '/checkout': (context) => CheckoutScreen(),
+          '/orderHistory': (context) => HistoryScreen(),
           '/contact': (context) => ContactScreen(),
           '/about': (context) => AboutScreen(),
         },

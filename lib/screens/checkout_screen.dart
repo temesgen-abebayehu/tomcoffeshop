@@ -3,30 +3,33 @@ import 'package:provider/provider.dart';
 import 'package:tomcoffeshop/models/cart_model.dart';
 import 'package:tomcoffeshop/widgets/base_scaffold.dart';
 
-class HistoryScreen extends StatelessWidget {
-  const HistoryScreen({super.key});
+class CheckoutScreen extends StatelessWidget {
+  const CheckoutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartModel>(context);
 
-    final completedAndExpiredOrders = cart.getCompletedAndExpiredOrders();
+    // Automatically mark expired orders
+    cart.expireOldOrders();
 
-    if (completedAndExpiredOrders.isEmpty) {
+    final pendingOrders = cart.getPendingOrders();
+
+    if (pendingOrders.isEmpty) {
       return const BaseScaffold(
-        title: 'Order History',
+        title: 'Checkout',
         body: Center(
-          child: Text('No order history available!'),
+          child: Text('No pending orders!'),
         ),
       );
     }
 
     return BaseScaffold(
-      title: 'Order History',
+      title: 'Checkout',
       body: ListView.builder(
-        itemCount: completedAndExpiredOrders.length,
+        itemCount: pendingOrders.length,
         itemBuilder: (context, index) {
-          final order = completedAndExpiredOrders[index];
+          final order = pendingOrders[index];
           return Card(
             color: Colors.white,
             shadowColor: Colors.grey,
@@ -44,11 +47,24 @@ class HistoryScreen extends StatelessWidget {
                   Text('Placed By: ${order['placedBy']}'),
                   Text('Email: ${order['email']}'),
                   Text('Address: ${order['address']}'),
-                  Text('Items: ${(order['items'] ?? []).join(', ')}'),
+                  Text('Items: ${order['items']?.join(', ') ?? 'No items'}'),
                   Text('Payment Method: ${order['paymentMethod']}'),
                   Text('Total Price: Birr ${order['totalPrice']}'),
                   Text('Status: ${order['status']}'),
                   Text('Date: ${order['date']}'),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      cart.markOrderAsCompleted(order['id']);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown,
+                    ),
+                    child: const Text(
+                      'Check Order',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ],
               ),
             ),

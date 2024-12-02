@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class BaseScaffold extends StatelessWidget {
   final Widget body;
@@ -75,6 +74,10 @@ class BaseScaffold extends StatelessWidget {
                 onTap: () => Navigator.pushNamed(context, '/cart'),
               ),
               ListTile(
+                title: const Text('CheckOut', style: TextStyle(color: Colors.white)),
+                onTap: () => Navigator.pushNamed(context, '/checkout'),
+              ),
+              ListTile(
                 title: const Text('History', style: TextStyle(color: Colors.white)),
                 onTap: () => Navigator.pushNamed(context, '/orderHistory'),
               ),
@@ -116,25 +119,25 @@ class Footer extends StatelessWidget {
               IconButton(
                 icon: const FaIcon(FontAwesomeIcons.facebook, color: Colors.white),
                 onPressed: () {
-                  launch('https://www.facebook.com');
+                  // Handle Facebook button press
                 },
               ),
               IconButton(
                 icon: const FaIcon(FontAwesomeIcons.telegram, color: Colors.white),
                 onPressed: () {
-                  launch('https://www.telegram.com');
+                  // Handle Telegram button press
                 },
               ),
               IconButton(
                 icon: const FaIcon(FontAwesomeIcons.linkedin, color: Colors.white),
                 onPressed: () {
-                  launch('https://www.linkedin.com');
+                  // Handle LinkedIn button press
                 },
               ),
               IconButton(
                 icon: const FaIcon(FontAwesomeIcons.instagram, color: Colors.white),
                 onPressed: () {
-                  launch('https://www.instagram.com');
+                  // Handle Instagram button press
                 },
               ),
             ],

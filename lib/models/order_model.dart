@@ -4,6 +4,8 @@ class Order {
   final String address;
   final String email;
   final List<String> items;
+  final String status;
+  final String date;
   final double totalPrice;
   final String paymentMethod;
 
@@ -12,6 +14,8 @@ class Order {
     required this.address,
     required this.email,
     required this.items,
+    required this.status,
+    required this.date,
     required this.totalPrice,
     required this.paymentMethod,
   });

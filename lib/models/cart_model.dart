@@ -1,30 +1,30 @@
-// lib/models/cart_model.dart
 import 'package:flutter/material.dart';
 import 'package:tomcoffeshop/models/cart_item.dart';
-import 'package:tomcoffeshop/models/order_model.dart';
 import 'package:tomcoffeshop/models/user_model.dart';
 
 class CartModel extends ChangeNotifier {
   final UserModel _user = UserModel(
     id: '1',
     name: 'Temesgen',
-    address: 'addis ababa',
+    address: 'Addis Ababa',
     email: 'tom@gmail.com',
     phoneNumber: '1234567890',
     profileImageUrl: 'lib/images/profile.jpg',
   );
 
+  final List<CartItem> _items = [];
+  final List<Map<String, dynamic>> _orders = [];
+
+  List<CartItem> get cartItems => _items;
+  List<Map<String, dynamic>> get orders => _orders;
+
   String get userName => _user.name;
   String get userAddress => _user.address;
   String get userEmail => _user.email;
-  final List<String> _orderHistory = [];
-  final List<CartItem> _items = []; // Stores cart items
-
-  List<CartItem> get cartItems => _items;
 
   double get totalPrice => _items.fold(0, (sum, item) => sum + (item.price * item.quantity));
 
-  // Setter for user info
+  // Update user info
   void setUserInfo(String name, String address, String email) {
     _user.name = name;
     _user.address = address;
@@ -36,7 +36,7 @@ class CartModel extends ChangeNotifier {
   void addItemToCart(CartItem item) {
     final existingIndex = _items.indexWhere((cartItem) => cartItem.name == item.name);
     if (existingIndex != -1) {
-      _items[existingIndex].quantity += 1; // Increase quantity if already in cart
+      _items[existingIndex].quantity += 1;
     } else {
       _items.add(item);
     }
@@ -48,54 +48,82 @@ class CartModel extends ChangeNotifier {
     final existingIndex = _items.indexWhere((cartItem) => cartItem.name == item.name);
     if (existingIndex != -1) {
       if (_items[existingIndex].quantity > 1) {
-        _items[existingIndex].quantity -= 1; // Decrease quantity
+        _items[existingIndex].quantity -= 1;
       } else {
-        _items.removeAt(existingIndex); // Remove item if quantity is 1
+        _items.removeAt(existingIndex);
       }
     }
     notifyListeners();
   }
 
-  // Clear the cart
+  // Clear all items from cart
   void clearCart() {
     _items.clear();
     notifyListeners();
   }
 
-  // Place an order and save in history
+  // Place an order
   void placeOrder(String paymentMethod) {
     final DateTime now = DateTime.now();
-    final String formattedDate = '${now.month}/${now.day}/${now.year} ${now.hour == 0 ? 12 : now.hour % 12}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}';
-    
-    String order = 'Order placed by: ${_user.name}\n' 
-        'Email: (${_user.email})\n'
-        'Address: ${_user.address}\n'
-        'Payment Method: $paymentMethod\n'
-        'Items: ${_items.map((item) => '${item.name} x ${item.quantity}').join(', ')}\n'
-        'Status: Order Placed\n'
-        'Total Price: Birr ${totalPrice.toStringAsFixed(2)}\n'
-        'Date: $formattedDate';
-    _orderHistory.add(order);
+    final String formattedDate =
+        '${now.month}/${now.day}/${now.year} ${now.hour == 0 ? 12 : now.hour % 12}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}';
+
+    final Map<String, dynamic> orderDetails = {
+      'id': DateTime.now().toIso8601String(),
+      'placedBy': _user.name,
+      'email': _user.email,
+      'address': _user.address,
+      'items': _items.map((item) => {
+        'name': item.name,
+        'price': item.price,
+        'quantity': item.quantity,
+      }).toList(),
+      'paymentMethod': paymentMethod,
+      'status': 'Pending',
+      'totalPrice': totalPrice.toStringAsFixed(2),
+      'date': formattedDate,
+      'timestamp': now
+    };
+
+    _orders.add(orderDetails);
     clearCart();
     notifyListeners();
   }
 
-  // Get order history
-  List<String> get orderHistory => _orderHistory;
+  // Update the status of an order
+  void markOrderAsCompleted(String orderId) {
+    final orderIndex = _orders.indexWhere((order) => order['id'] == orderId);
+    if (orderIndex != -1) {
+      _orders[orderIndex]['status'] = 'Completed';
+      notifyListeners();
+    }
+  }
 
-  // Add a complete order object to history (if needed)
-  void addOrder(Order order) {
-    // Convert order to a string for display
-    String orderDetails = 'Order by ${order.name}\n'
-        'Email: (${order.email})\n'
-        'Address: ${order.address}\n'
-        'Items: ${order.items.join(', ')}\n'
-        'Total Price: Birr ${order.totalPrice}\n'
-        'Items: ${order.items.join(', ')}\n'     
-        'Status: Order Placed\n'  
-        'Payment Method: ${order.paymentMethod}';
-    _orderHistory.add(orderDetails);
-    clearCart();
+  void markOrderAsExpired(String orderId) {
+    final orderIndex = _orders.indexWhere((order) => order['id'] == orderId);
+    if (orderIndex != -1) {
+      _orders[orderIndex]['status'] = 'Expired';
+      notifyListeners();
+    }
+  }
+
+  // Automatically expire orders after 12 hours
+  void expireOldOrders() {
+    final DateTime now = DateTime.now();
+    for (var order in _orders) {
+      if (order['status'] == 'Pending' && now.difference(order['timestamp']).inSeconds >= 20) {
+        order['status'] = 'Expired';
+      }
+    }
     notifyListeners();
+  }
+
+  // Add order to history
+  List<Map<String, dynamic>> getCompletedAndExpiredOrders() {
+    return _orders.where((order) => order['status'] != 'Pending').toList();
+  }
+
+  List<Map<String, dynamic>> getPendingOrders() {
+    return _orders.where((order) => order['status'] == 'Pending').toList();
   }
 }
