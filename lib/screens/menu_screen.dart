@@ -137,7 +137,6 @@ class MenuScreen extends StatelessWidget {
                   onPressed: () {
                     Provider.of<CartModel>(context, listen: false).addItemToCart(
                       CartItem(
-                        menuItem: menuItem,
                         name: menuItem.name,
                         price: menuItem.price,
                         quantity: quantity,

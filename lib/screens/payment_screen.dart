@@ -43,13 +43,6 @@ class PaymentScreen extends StatelessWidget {
             },
             child: const Text('Pay with TeleBirr'),
           ),
-          ElevatedButton(
-            onPressed: () {
-              cart.placeOrder('Cash');
-              Navigator.pushNamed(context, '/orderSuccess');
-            },
-            child: const Text('Pay with Cash'),
-          ),
         ],
       ),
     );

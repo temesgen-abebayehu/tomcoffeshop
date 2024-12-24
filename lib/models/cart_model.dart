@@ -1,30 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tomcoffeshop/models/cart_item.dart';
 import 'package:tomcoffeshop/models/user_model.dart';
 
 class CartModel extends ChangeNotifier {
-  final UserModel _user = UserModel(
-    id: '1',
-    name: 'Temesgen',
-    address: 'Addis Ababa',
-    email: 'tom@gmail.com',
-    phoneNumber: '1234567890',
-    profileImageUrl: 'lib/images/profile.jpg',
-  );
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  late UserModel _user;
   final List<CartItem> _items = [];
   final List<Map<String, dynamic>> _orders = [];
 
+  // Getters
   List<CartItem> get cartItems => _items;
   List<Map<String, dynamic>> get orders => _orders;
-
   String get userName => _user.name;
   String get userAddress => _user.address;
   String get userEmail => _user.email;
+  double get totalPrice =>
+      _items.fold(0, (sum, item) => sum + (item.price * item.quantity));
 
-  double get totalPrice => _items.fold(0, (sum, item) => sum + (item.price * item.quantity));
+  // Fetch user information
+  Future<UserModel> fetchUser(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    return UserModel(
+      id: userId,
+      name: doc['name'],
+      address: doc['address'],
+      email: doc['email'],
+      phoneNumber: doc['phoneNumber'],
+      profileImageUrl: doc['profileImageUrl'],
+    );
+  }
 
-  // Update user info
+  // Firebase: Add item to cart
+  Future<void> addItemToCartFirebase(String userId, CartItem item) async {
+    await _firestore.collection('cart').doc(userId).set({
+      'items': FieldValue.arrayUnion([item.toJson()]),
+      'totalPrice': totalPrice,
+    }, SetOptions(merge: true));
+  }
+
+  // Firebase: Fetch cart items
+  Future<List<CartItem>> fetchCartItemsFirebase(String userId) async {
+    final doc = await _firestore.collection('cart').doc(userId).get();
+    final List<dynamic> items = doc['items'] ?? [];
+    return items.map((item) => CartItem.fromJson(item)).toList();
+  }
+
+  // Firebase: Add order
+  Future<void> addOrderFirebase(
+      String userId, Map<String, dynamic> order) async {
+    await _firestore.collection('orders').add({
+      ...order,
+      'userId': userId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
+  // Firebase: Fetch pending orders
+  Future<List<Map<String, dynamic>>> fetchPendingOrdersFirebase(
+      String userId) async {
+    final snapshot = await _firestore
+        .collection('orders')
+        .where('userId', isEqualTo: userId)
+        .where('status', isEqualTo: 'Pending')
+        .get();
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  // Local: Update user information
   void setUserInfo(String name, String address, String email) {
     _user.name = name;
     _user.address = address;
@@ -32,9 +76,10 @@ class CartModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Add item to cart
+  // Local: Manage cart items
   void addItemToCart(CartItem item) {
-    final existingIndex = _items.indexWhere((cartItem) => cartItem.name == item.name);
+    final existingIndex =
+        _items.indexWhere((cartItem) => cartItem.name == item.name);
     if (existingIndex != -1) {
       _items[existingIndex].quantity += 1;
     } else {
@@ -43,9 +88,9 @@ class CartModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Remove item from cart
   void removeItemFromCart(CartItem item) {
-    final existingIndex = _items.indexWhere((cartItem) => cartItem.name == item.name);
+    final existingIndex =
+        _items.indexWhere((cartItem) => cartItem.name == item.name);
     if (existingIndex != -1) {
       if (_items[existingIndex].quantity > 1) {
         _items[existingIndex].quantity -= 1;
@@ -56,13 +101,12 @@ class CartModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Clear all items from cart
-  void clearCart() {
+  void clearCartLocal() {
     _items.clear();
     notifyListeners();
   }
 
-  // Place an order
+  // Local: Manage orders
   void placeOrder(String paymentMethod) {
     final DateTime now = DateTime.now();
     final String formattedDate =
@@ -73,11 +117,7 @@ class CartModel extends ChangeNotifier {
       'placedBy': _user.name,
       'email': _user.email,
       'address': _user.address,
-      'items': _items.map((item) => {
-        'name': item.name,
-        'price': item.price,
-        'quantity': item.quantity,
-      }).toList(),
+      'items': _items.map((item) => item.toJson()).toList(),
       'paymentMethod': paymentMethod,
       'status': 'Pending',
       'totalPrice': totalPrice.toStringAsFixed(2),
@@ -86,11 +126,29 @@ class CartModel extends ChangeNotifier {
     };
 
     _orders.add(orderDetails);
-    clearCart();
+    clearCartLocal();
     notifyListeners();
   }
 
-  // Update the status of an order
+  void updateOrderStatus(String orderId, String status) {
+    final orderIndex = _orders.indexWhere((order) => order['id'] == orderId);
+    if (orderIndex != -1) {
+      _orders[orderIndex]['status'] = status;
+      notifyListeners();
+    }
+  }
+
+  void expireOldOrders() {
+    final DateTime now = DateTime.now();
+    for (var order in _orders) {
+      if (order['status'] == 'Pending' &&
+          now.difference(order['timestamp']).inHours >= 12) {
+        order['status'] = 'Expired';
+      }
+    }
+    notifyListeners();
+  }
+
   void markOrderAsCompleted(String orderId) {
     final orderIndex = _orders.indexWhere((order) => order['id'] == orderId);
     if (orderIndex != -1) {
@@ -99,26 +157,7 @@ class CartModel extends ChangeNotifier {
     }
   }
 
-  void markOrderAsExpired(String orderId) {
-    final orderIndex = _orders.indexWhere((order) => order['id'] == orderId);
-    if (orderIndex != -1) {
-      _orders[orderIndex]['status'] = 'Expired';
-      notifyListeners();
-    }
-  }
-
-  // Automatically expire orders after 12 hours
-  void expireOldOrders() {
-    final DateTime now = DateTime.now();
-    for (var order in _orders) {
-      if (order['status'] == 'Pending' && now.difference(order['timestamp']).inSeconds >= 20) {
-        order['status'] = 'Expired';
-      }
-    }
-    notifyListeners();
-  }
-
-  // Add order to history
+  // Local: Get order summaries
   List<Map<String, dynamic>> getCompletedAndExpiredOrders() {
     return _orders.where((order) => order['status'] != 'Pending').toList();
   }
