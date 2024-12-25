@@ -24,12 +24,6 @@ class AboutScreen extends StatelessWidget {
                   'crafted with love and care.',
                   style: TextStyle(fontSize: 18),
                 ),
-                SizedBox(height: 16),                              
-                Image(
-                  image: AssetImage('lib/images/founder.jpg'),
-                  height: 300,
-                  width: 300,
-                ),
                 SizedBox(height: 8),
                 Text(
                   'Founder: Temesgen Abebayehu',

@@ -22,73 +22,75 @@ class EditAccountScreenState extends State<EditAccountScreen> {
       address: 'addis ababa',
       email: 'tom@gmail.com',
       phoneNumber: '+25123456789',
-      profileImageUrl: 'lib/images/profile.jpg', 
+      profileImageUrl: 'lib/images/profile.jpg',
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      title:'Account Info',
+      title: 'Account Info',
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage(_user.profileImageUrl),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: AssetImage(_user.profileImageUrl),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Name'),
-                initialValue: _user.name,
-                onSaved: (value) {
-                  _user.name = value!;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Address'),
-                initialValue: _user.address,
-                onSaved: (value) {
-                  _user.address = value!;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Email'),
-                initialValue: _user.email,
-                onSaved: (value) {
-                  _user.email = value!;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Phone'),
-                initialValue: _user.phoneNumber,
-                onSaved: (value) {
-                  _user.phoneNumber = value!;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    // Save the updated details
-                    setState(() {});
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Account info saved')),
-                    );
-                    // Navigate to home page
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text('Save'),
-              ),
-            ],
+                const SizedBox(height: 20),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Name'),
+                  initialValue: _user.name,
+                  onSaved: (value) {
+                    _user.name = value!;
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Address'),
+                  initialValue: _user.address,
+                  onSaved: (value) {
+                    _user.address = value!;
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  initialValue: _user.email,
+                  onSaved: (value) {
+                    _user.email = value!;
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Phone'),
+                  initialValue: _user.phoneNumber,
+                  onSaved: (value) {
+                    _user.phoneNumber = value!;
+                  },
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      // Save the updated details
+                      setState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Account info saved')),
+                      );
+                      // Navigate to home page
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

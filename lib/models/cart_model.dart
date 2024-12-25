@@ -10,7 +10,12 @@ class CartModel extends ChangeNotifier {
   final List<CartItem> _items = [];
   final List<Map<String, dynamic>> _orders = [];
 
-  // Getters
+  // Constructor to initialize _user
+  CartModel({required UserModel user}) {
+    _user = user;
+  }
+
+  // Getters for cart items and orders
   List<CartItem> get cartItems => _items;
   List<Map<String, dynamic>> get orders => _orders;
   String get userName => _user.name;
@@ -19,16 +24,43 @@ class CartModel extends ChangeNotifier {
   double get totalPrice =>
       _items.fold(0, (sum, item) => sum + (item.price * item.quantity));
 
-  // Fetch user information
+  // Initialize CartModel data
+  Future<void> initializeCartModel(String userId) async {
+    try {
+      // Fetch user details from Firebase
+      _user = await fetchUser(userId);
+
+      // Fetch cart items
+      _items.clear();
+      _items.addAll(await fetchCartItemsFirebase(userId));
+
+      // Fetch pending orders
+      _orders.clear();
+      _orders.addAll(await fetchPendingOrdersFirebase(userId));
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error initializing CartModel: $e');
+    }
+  }
+
+  // Firebase: Fetch user information
   Future<UserModel> fetchUser(String userId) async {
     final doc = await _firestore.collection('users').doc(userId).get();
+
+    if (!doc.exists) {
+      // Handle the case when the document does not exist
+      throw Exception('User document does not exist');
+    }
+
+    // Safely access fields and provide fallback values for missing fields
     return UserModel(
       id: userId,
-      name: doc['name'],
-      address: doc['address'],
-      email: doc['email'],
-      phoneNumber: doc['phoneNumber'],
-      profileImageUrl: doc['profileImageUrl'],
+      name: doc['name'] ?? 'Unknown',  // Default to 'Unknown' if 'name' is missing
+      address: doc['address'] ?? 'No address provided',
+      email: doc['email'] ?? 'No email provided',
+      phoneNumber: doc['phoneNumber'] ?? 'No phone number provided',
+      profileImageUrl: doc['profileImageUrl'] ?? '',  // Default to empty string if missing
     );
   }
 
@@ -37,6 +69,7 @@ class CartModel extends ChangeNotifier {
     await _firestore.collection('cart').doc(userId).set({
       'items': FieldValue.arrayUnion([item.toJson()]),
       'totalPrice': totalPrice,
+      'userId': userId,
     }, SetOptions(merge: true));
   }
 
@@ -48,8 +81,7 @@ class CartModel extends ChangeNotifier {
   }
 
   // Firebase: Add order
-  Future<void> addOrderFirebase(
-      String userId, Map<String, dynamic> order) async {
+  Future<void> addOrderFirebase(String userId, Map<String, dynamic> order) async {
     await _firestore.collection('orders').add({
       ...order,
       'userId': userId,
@@ -58,8 +90,7 @@ class CartModel extends ChangeNotifier {
   }
 
   // Firebase: Fetch pending orders
-  Future<List<Map<String, dynamic>>> fetchPendingOrdersFirebase(
-      String userId) async {
+  Future<List<Map<String, dynamic>>> fetchPendingOrdersFirebase(String userId) async {
     final snapshot = await _firestore
         .collection('orders')
         .where('userId', isEqualTo: userId)
@@ -139,14 +170,16 @@ class CartModel extends ChangeNotifier {
   }
 
   void expireOldOrders() {
-    final DateTime now = DateTime.now();
-    for (var order in _orders) {
-      if (order['status'] == 'Pending' &&
-          now.difference(order['timestamp']).inHours >= 12) {
-        order['status'] = 'Expired';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final DateTime now = DateTime.now();
+      for (var order in _orders) {
+        if (order['status'] == 'Pending' &&
+            now.difference(order['timestamp']).inHours >= 12) {
+          order['status'] = 'Expired';
+        }
       }
-    }
-    notifyListeners();
+      notifyListeners();
+    });
   }
 
   void markOrderAsCompleted(String orderId) {
