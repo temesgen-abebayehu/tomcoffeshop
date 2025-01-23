@@ -38,8 +38,13 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+    lintOptions {
+        disable 'Obsolete', 'Deprecation'
+    }
 }
 
 flutter {
     source = "../.."
 }
+
+apply plugin: 'com.google.gms.google-services'
